@@ -25,6 +25,7 @@
 import os
 import glob
 import ntpath
+import time
 
 class markov():
     """Classe à utiliser pour coder la solution à la problématique:
@@ -131,9 +132,10 @@ class markov():
         self.rep_aut = os.getcwd()
         self.auteurs = []
         self.ngram = 1
-
+        self.sorted_dict = dict()
+        for author in self.auteurs:
+            self.sorted_dict[author] = {}
         # Au besoin, ajouter votre code d'initialisation de l'objet de type markov lors de sa création
-        self.dict_mot = list()
         return
 
     # Ajouter les structures de données et les fonctions nécessaires à l'analyse des textes,
@@ -193,7 +195,11 @@ class markov():
         Returns:
             ngram (List[string]) : Liste des mots composant le n-gramme recherché
         """
+        keys = list()
+        keys = self.sorted_dict[auteur]
+        # print(keys)
         ngram = ['un', 'roman']   # Exemple du format de sortie d'un bigramme
+        ngram = keys[n-1]
         return ngram
 
 
@@ -208,6 +214,7 @@ class markov():
         """
         # Create dict in a dict
         word_dict = dict()
+        start_time_create_dict = time.time()
         for author in self.auteurs:
             word_dict[author] = {}
         # Scan for each author
@@ -247,18 +254,25 @@ class markov():
                 # 1 = 35676 combinaisons
                 # 2 = 411361 combinaisons
                 # 3 = 673196 combinaisons
-
+                # check if the word is in the dict of the author and add it. Or increase the value.
                 if string_to_sort not in word_dict[author]:
                     word_dict[author][string_to_sort] = 1
                 else:
                     word_dict[author][string_to_sort] = word_dict[author][string_to_sort] + 1
+        final_time_create_dict = time.time() - start_time_create_dict
+        # sort the dict
+        start_time_sort_dict = time.time()
 
+        for author in self.auteurs:
+            self.sorted_dict[author] = sorted(word_dict[author].items(), key=lambda x: -x[1])
+        final_time_sort_dict = time.time() - start_time_sort_dict
+        print(self.sorted_dict[self.auteurs[5]])
+        print("Time to create dictionary : " + str(final_time_create_dict))
+        print("Time to sort dictionary : " + str(final_time_sort_dict))
 
-            # for ngram in range(self.ngram):
-            # print(word_dict[author])
-            # print(len(word_dict[author].keys()))
-
-
+        # print(" Most used unigram by " + self.auteurs[3] + " : swince")
+        # print(" Most used bigram by " + self.auteurs[3] + " : swince au")
+        # print(" Most used trigram by " + self.auteurs[3] + " : swince au boute")
         # Ajouter votre code ici pour traiter l'ensemble des oeuvres de l'ensemble des auteurs
         # Pour l'analyse:  faire le calcul des fréquences de n-grammes pour l'ensemble des oeuvres
         #   d'un certain auteur, sans distinction des oeuvres individuelles,
