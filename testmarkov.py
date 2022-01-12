@@ -184,22 +184,6 @@ class TestMarkov():
 
         return
 
-    def analyse(self, text):
-
-        return 0
-
-    def find_author(self):
-
-        return 0
-
-    def gen_test(self, author):
-
-        return 0
-
-    def get_nth_element(self, element):
-
-        return 0
-
     def __init__(self):
         """Constructeur pour la classe testmarkov.  Initialisation de l'ensemble des éléments requis
 
