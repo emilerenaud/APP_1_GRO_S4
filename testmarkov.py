@@ -11,7 +11,7 @@ import argparse
 import importlib
 import sys
 
-# import markov_CIP1_CIP2 as markov
+import markov_lant1001_rene0901 as markov
 
 
 class TestMarkov():
@@ -184,6 +184,22 @@ class TestMarkov():
 
         return
 
+    def analyse(self, text):
+
+        return 0
+
+    def find_author(self):
+
+        return 0
+
+    def gen_test(self, author):
+
+        return 0
+
+    def get_nth_element(self, element):
+
+        return 0
+
     def __init__(self):
         """Constructeur pour la classe testmarkov.  Initialisation de l'ensemble des éléments requis
 
@@ -210,8 +226,9 @@ class TestMarkov():
         self.setup_and_parse_cli()
 
         self.cips = []
-        self.list_cips()
+        #self.list_cips()
         self.init_modules = {}
+
 
 
 if __name__ == "__main__":
