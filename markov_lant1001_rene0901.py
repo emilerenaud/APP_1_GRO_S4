@@ -42,7 +42,7 @@ class markov():
 
     # Le code qui suit est fourni pour vous faciliter la vie.  Il n'a pas à être modifié
     # Signes de ponctuation à retirer (compléter la liste qui ne comprend que "!" et "," au départ)
-    PONC = ["!",","]
+    PONC = ["!",",","'",".", ":","-","?",";","_","«","»"]
 
     def set_ponc(self, value):
         """Détermine si les signes de ponctuation sont conservés (True) ou éliminés (False)
@@ -133,7 +133,7 @@ class markov():
         self.ngram = 1
 
         # Au besoin, ajouter votre code d'initialisation de l'objet de type markov lors de sa création
-
+        self.dict_mot = list()
         return
 
     # Ajouter les structures de données et les fonctions nécessaires à l'analyse des textes,
@@ -206,6 +206,21 @@ class markov():
         Returns:
             void : ne retourne rien, toute l'information extraite est conservée dans des strutures internes
         """
+        # in each file from the author[0]
+        word_list = list()  # empty list. remake it for each author.
+        for filename in self.get_aut_files(self.auteurs[0]):
+            # print(filename)
+            # print("\n")
+
+            file = open(filename,encoding="UTF-8")
+            for line in file:
+                for replace_char in self.PONC:
+                    line = line.replace(replace_char, ' ')
+                for word in line.split():
+                    if len(word) >2:
+                        word_list.append(word)
+
+
 
         # Ajouter votre code ici pour traiter l'ensemble des oeuvres de l'ensemble des auteurs
         # Pour l'analyse:  faire le calcul des fréquences de n-grammes pour l'ensemble des oeuvres

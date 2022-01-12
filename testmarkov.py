@@ -210,7 +210,7 @@ class TestMarkov():
         self.setup_and_parse_cli()
 
         self.cips = []
-        #self.list_cips()
+        self.list_cips()
         self.init_modules = {}
 
 
@@ -247,4 +247,3 @@ if __name__ == "__main__":
             nth_ngram = tm.markov.get_nth_element(tm.auteur, tm.nth_ngram)
             print("cip: ", cip, " - Auteur: ", tm.auteur, ", ", tm.nth_ngram, "e ngram de ", tm.ngram, "mots: ", nth_ngram)
 
-            #TEST
