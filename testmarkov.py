@@ -11,7 +11,7 @@ import argparse
 import importlib
 import sys
 
-# import markov_CIP1_CIP2 as markov
+import markov_lant1001_rene0901 as markov
 
 
 class TestMarkov():
@@ -217,6 +217,8 @@ class TestMarkov():
 if __name__ == "__main__":
     tm = TestMarkov()       # Initialisation de l'instance de test
     print("Code Start Here")
+
+
 
     for cip in tm.cips:   # Permet de tester le code d'une ou plusieurs équipes, à tour de rôle
         tm.import_markov_cip(cip)
