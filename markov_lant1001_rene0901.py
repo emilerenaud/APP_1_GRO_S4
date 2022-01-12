@@ -208,6 +208,7 @@ class markov():
         """
         # in each file from the author[0]
         word_list = list()  # empty list. remake it for each author.
+        word_dict = dict()
         for filename in self.get_aut_files(self.auteurs[0]):
             # print(filename)
             # print("\n")
@@ -217,8 +218,22 @@ class markov():
                 for replace_char in self.PONC:
                     line = line.replace(replace_char, ' ')
                 for word in line.split():
-                    if len(word) >2:
-                        word_list.append(word)
+                    if len(word) > 2:
+                        word_list.append(word.lower())
+        # Create n-gramme
+        print("lengh list = " + str(len(word_list)))
+        while len(word_list) > 0:
+            if self.ngram == 1:
+                word_to_sort = word_list.pop()
+                if word_to_sort not in word_dict:
+                    word_dict[word_to_sort] = 1
+                else:
+                    word_dict[word_to_sort] = word_dict[word_to_sort] + 1
+        print("finish list")
+        key = "Paris"
+        print(word_dict)
+
+        # for ngram in range(self.ngram):
 
 
 
