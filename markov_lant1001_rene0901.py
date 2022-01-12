@@ -42,7 +42,7 @@ class markov():
 
     # Le code qui suit est fourni pour vous faciliter la vie.  Il n'a pas à être modifié
     # Signes de ponctuation à retirer (compléter la liste qui ne comprend que "!" et "," au départ)
-    PONC = ["!",",","'",".", ":","-","?",";","_","«","»"]
+    PONC = ["!",",","'",".", ":","-","?",";","_","«","»","(",")"]
 
     def set_ponc(self, value):
         """Détermine si les signes de ponctuation sont conservés (True) ou éliminés (False)
@@ -209,9 +209,10 @@ class markov():
         # in each file from the author[0]
         word_list = list()  # empty list. remake it for each author.
         word_dict = dict()
+
         for filename in self.get_aut_files(self.auteurs[0]):
-            # print(filename)
-            # print("\n")
+            print(filename)
+            print("\n")
 
             file = open(filename,encoding="UTF-8")
             for line in file:
@@ -222,19 +223,33 @@ class markov():
                         word_list.append(word.lower())
         # Create n-gramme
         print("lengh list = " + str(len(word_list)))
+        word_list.reverse() # reverse the list because we'll use pop(). and that take the last item in the list.
+        word_to_use = list()
         while len(word_list) > 0:
-            if self.ngram == 1:
-                word_to_sort = word_list.pop()
-                if word_to_sort not in word_dict:
-                    word_dict[word_to_sort] = 1
-                else:
-                    word_dict[word_to_sort] = word_dict[word_to_sort] + 1
-        print("finish list")
-        key = "Paris"
-        print(word_dict)
+            string_to_sort = ""
+            n_gram_lenght = self.ngram
+            if len(word_list) < self.ngram:
+                n_gram_lenght = len(word_list)
+            while len(word_to_use) < n_gram_lenght:
+                word_to_use.append(word_list.pop() + " ")
+            # juste premier, ou reverse, pop , reverse
+            for word in word_to_use:
+                string_to_sort = string_to_sort + word
+            word_to_use.pop(0)
+
+            # 1 = 35676 combinaisons
+            # 2 = 411361 combinaisons
+            # 3 = 673196 combinaisons
+
+            if string_to_sort not in word_dict:
+                word_dict[string_to_sort] = 1
+            else:
+                word_dict[string_to_sort] = word_dict[string_to_sort] + 1
+
 
         # for ngram in range(self.ngram):
-
+        print(word_dict)
+        print(len(word_dict.keys()))
 
 
         # Ajouter votre code ici pour traiter l'ensemble des oeuvres de l'ensemble des auteurs
