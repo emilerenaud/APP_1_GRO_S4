@@ -206,50 +206,57 @@ class markov():
         Returns:
             void : ne retourne rien, toute l'information extraite est conservée dans des strutures internes
         """
-        # in each file from the author[0]
-        word_list = list()  # empty list. remake it for each author.
+        # Create dict in a dict
         word_dict = dict()
+        for author in self.auteurs:
+            word_dict[author] = {}
+        # Scan for each author
+        for author in self.auteurs:
+            word_list = list()  # empty list. remake it for each author. Not needed because we pop() the list.
+            # Scan each filename for an author
+            for filename in self.get_aut_files(author):
+                # Open a file
+                file = open(filename,encoding="UTF-8")
+                # work each line one by one
+                for line in file:
+                    # replace ponctuation by space
+                    for replace_char in self.PONC:
+                        line = line.replace(replace_char, ' ')
+                    # take each word and check if it's longer than 2 letters. + lower the work and put it in a list.
+                    for word in line.split():
+                        if len(word) > 2:
+                            word_list.append(word.lower())
 
-        for filename in self.get_aut_files(self.auteurs[0]):
-            print(filename)
-            print("\n")
+            # Create n-gramme string
+            # print("lengh list = " + str(len(word_list)))
+            word_list.reverse()     # reverse the list because we'll use pop(). and that take the last item in the list.
+            word_to_use = list()    # list of word to use to create a string
+            while len(word_list) > 0:
+                string_to_sort = ""
+                # create string that have n-word. But it can cause error -> ex: odd number
+                n_gram_length = self.ngram
+                if len(word_list) < self.ngram:     # if i dont have enough word to complete the n-gramme,  use the remaining.
+                    n_gram_length = len(word_list)
+                while len(word_to_use) < n_gram_length:
+                    word_to_use.append(word_list.pop() + " ")
+                # construct a string with the word to use.
+                for word in word_to_use:
+                    string_to_sort = string_to_sort + word
+                word_to_use.pop(0)  # pop the first element of the word to use.
 
-            file = open(filename,encoding="UTF-8")
-            for line in file:
-                for replace_char in self.PONC:
-                    line = line.replace(replace_char, ' ')
-                for word in line.split():
-                    if len(word) > 2:
-                        word_list.append(word.lower())
-        # Create n-gramme
-        print("lengh list = " + str(len(word_list)))
-        word_list.reverse() # reverse the list because we'll use pop(). and that take the last item in the list.
-        word_to_use = list()
-        while len(word_list) > 0:
-            string_to_sort = ""
-            n_gram_lenght = self.ngram
-            if len(word_list) < self.ngram:
-                n_gram_lenght = len(word_list)
-            while len(word_to_use) < n_gram_lenght:
-                word_to_use.append(word_list.pop() + " ")
-            # juste premier, ou reverse, pop , reverse
-            for word in word_to_use:
-                string_to_sort = string_to_sort + word
-            word_to_use.pop(0)
+                # 1 = 35676 combinaisons
+                # 2 = 411361 combinaisons
+                # 3 = 673196 combinaisons
 
-            # 1 = 35676 combinaisons
-            # 2 = 411361 combinaisons
-            # 3 = 673196 combinaisons
-
-            if string_to_sort not in word_dict:
-                word_dict[string_to_sort] = 1
-            else:
-                word_dict[string_to_sort] = word_dict[string_to_sort] + 1
+                if string_to_sort not in word_dict[author]:
+                    word_dict[author][string_to_sort] = 1
+                else:
+                    word_dict[author][string_to_sort] = word_dict[author][string_to_sort] + 1
 
 
-        # for ngram in range(self.ngram):
-        print(word_dict)
-        print(len(word_dict.keys()))
+            # for ngram in range(self.ngram):
+            # print(word_dict[author])
+            # print(len(word_dict[author].keys()))
 
 
         # Ajouter votre code ici pour traiter l'ensemble des oeuvres de l'ensemble des auteurs
