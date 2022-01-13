@@ -210,7 +210,7 @@ class TestMarkov():
         self.setup_and_parse_cli()
 
         self.cips = []
-        #self.list_cips()
+        self.list_cips()
         self.init_modules = {}
 
 
@@ -218,6 +218,7 @@ class TestMarkov():
 if __name__ == "__main__":
     tm = TestMarkov()       # Initialisation de l'instance de test
     print("Code Start Here")
+
 
 
 

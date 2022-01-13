@@ -25,6 +25,7 @@
 import os
 import glob
 import ntpath
+import string
 
 class markov():
     """Classe à utiliser pour coder la solution à la problématique:
@@ -42,7 +43,8 @@ class markov():
 
     # Le code qui suit est fourni pour vous faciliter la vie.  Il n'a pas à être modifié
     # Signes de ponctuation à retirer (compléter la liste qui ne comprend que "!" et "," au départ)
-    PONC = ["!",","]
+    # PONC = ["!",",","-",".","?",";",":","...","(",")","'"]
+    PONC = "!,-.?;:()'_"
 
     def set_ponc(self, value):
         """Détermine si les signes de ponctuation sont conservés (True) ou éliminés (False)
@@ -219,5 +221,31 @@ class markov():
         #       avant des les additionner pour obtenir le vecteur global d'un auteur
         #   De cette façon, les mots d'un court poème auraient une importance beaucoup plus grande que
         #   les mots d'une très longue oeuvre du même auteur. Ce n'est PAS ce qui vous est demandé ici.
+
+        frequence_balzac = {}
+        texts_balzac = []
+        for file in self.get_aut_files("Balzac"):
+            texts_balzac.append(file)
+
+        for text in texts_balzac:
+            f = open(text, 'r',encoding="utf-8")
+            content = f.read()
+
+            content_2 = content.translate(content.maketrans(self.PONC, "           "))
+
+            word_list = []
+            for word in content_2.split():
+                if len(word) > 2:
+                    word_list.append(word.lower())
+
+            for w in word_list:
+                if w in frequence_balzac:
+                    frequence_balzac[w] += 1
+                else:
+                    frequence_balzac[w] = 1
+
+        print(frequence_balzac)
+
+
 
         return
