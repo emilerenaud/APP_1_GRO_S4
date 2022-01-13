@@ -222,29 +222,39 @@ class markov():
         #   De cette façon, les mots d'un court poème auraient une importance beaucoup plus grande que
         #   les mots d'une très longue oeuvre du même auteur. Ce n'est PAS ce qui vous est demandé ici.
 
-        frequence_balzac = {}
-        texts_balzac = []
-        for file in self.get_aut_files("Balzac"):
-            texts_balzac.append(file)
+        frequence_Balzac = {}
+        frequence_Hugo = {}
+        frequence_Segur = {}
+        frequence_Verne = {}
+        frequence_Voltaire = {}
+        frequence_Zola = {}
+        frequence_dict = dict()
 
-        for text in texts_balzac:
-            f = open(text, 'r',encoding="utf-8")
-            content = f.read()
+        for author in self.auteurs:
+            frequence_dict[author] = {}
+            texts_author = []
+            for file in self.get_aut_files(author):
+                texts_author.append(file)
 
-            content_2 = content.translate(content.maketrans(self.PONC, "           "))
+            for text in texts_author:
+                f = open(text, 'r',encoding="utf-8")
+                content = f.read()
 
-            word_list = []
-            for word in content_2.split():
-                if len(word) > 2:
-                    word_list.append(word.lower())
+                content_2 = content.translate(content.maketrans(self.PONC, "           "))
 
-            for w in word_list:
-                if w in frequence_balzac:
-                    frequence_balzac[w] += 1
-                else:
-                    frequence_balzac[w] = 1
+                word_list = []
+                for word in content_2.split():
+                    if len(word) > 2:
+                        word_list.append(word.lower())
 
-        print(frequence_balzac)
+                for w in word_list:
+                    if w in frequence_dict[author]:
+                        frequence_dict[author][w] += 1
+                    else:
+                        frequence_dict[author][w] = 1
+
+
+
 
 
 
