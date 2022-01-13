@@ -241,15 +241,17 @@ class markov():
                     if len(word) > 2:
                         word_list.append(word.lower())
 
-                for w in word_list:
-                    if w in frequence_dict[author]:
-                        frequence_dict[author][w] += 1
-                    else:
-                        frequence_dict[author][w] = 1
-
-
-
-
-
+                    while len(word_list) > 0:
+                        n_gram_lenght = self.ngram
+                        word_string = ''
+                        if len(word_list) == n_gram_lenght:
+                                for words in word_list:
+                                    word_string = word_string + words
+                                if word_string in frequence_dict[author]:
+                                    frequence_dict[author][word_string] += 1
+                                else:
+                                    frequence_dict[author][word_string] = 1
+                                for words in word_list:
+                                    word_list.remove(words)
 
         return
