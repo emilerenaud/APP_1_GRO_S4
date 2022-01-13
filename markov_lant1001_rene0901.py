@@ -44,7 +44,7 @@ class markov():
     # Le code qui suit est fourni pour vous faciliter la vie.  Il n'a pas à être modifié
     # Signes de ponctuation à retirer (compléter la liste qui ne comprend que "!" et "," au départ)
     # PONC = ["!",",","-",".","?",";",":","...","(",")","'"]
-    PONC = "!,-.?;:()'_"
+    PONC = "!,-.?;:()'_«»"
 
     def set_ponc(self, value):
         """Détermine si les signes de ponctuation sont conservés (True) ou éliminés (False)
@@ -195,7 +195,9 @@ class markov():
         Returns:
             ngram (List[string]) : Liste des mots composant le n-gramme recherché
         """
-        ngram = ['un', 'roman']   # Exemple du format de sortie d'un bigramme
+        ngram = self.sorted_frequence_dict['sorted_' + auteur][n]
+        # ngram = ['un', 'roman']   # Exemple du format de sortie d'un bigramme
+        print(ngram)
         return ngram
 
 
@@ -223,7 +225,7 @@ class markov():
         #   les mots d'une très longue oeuvre du même auteur. Ce n'est PAS ce qui vous est demandé ici.
 
         frequence_dict = dict()
-
+        sorted_frequence_dict = dict()
         for author in self.auteurs:
             frequence_dict[author] = {}
             texts_author = []
@@ -234,24 +236,29 @@ class markov():
                 f = open(text, 'r',encoding="utf-8")
                 content = f.read()
 
-                content_2 = content.translate(content.maketrans(self.PONC, "           "))
+                content_2 = content.translate(content.maketrans(self.PONC, "             "))
 
                 word_list = []
                 for word in content_2.split():
                     if len(word) > 2:
                         word_list.append(word.lower())
 
-                    while len(word_list) > 0:
+                    if len(word_list) > 0:
                         n_gram_lenght = self.ngram
                         word_string = ''
                         if len(word_list) == n_gram_lenght:
-                                for words in word_list:
-                                    word_string = word_string + words
-                                if word_string in frequence_dict[author]:
-                                    frequence_dict[author][word_string] += 1
-                                else:
-                                    frequence_dict[author][word_string] = 1
-                                for words in word_list:
-                                    word_list.remove(words)
+                            for words in word_list:
+                                word_string = word_string + words + ' '
+                            if word_string in frequence_dict[author]:
+                                frequence_dict[author][word_string] += 1
+                            else:
+                                frequence_dict[author][word_string] = 1
+                            for words in word_list:
+                                word_list.remove(words)
 
+        for authors in self.auteurs:
+            sorted_frequence_dict['sorted_' + authors] = sorted(frequence_dict[authors].items(), key=lambda x: x[1], reverse=True)
+
+
+        # print(sorted_frequence_dict['sorted_Balzac'])
         return
