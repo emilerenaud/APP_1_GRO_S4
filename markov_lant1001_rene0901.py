@@ -222,12 +222,6 @@ class markov():
         #   De cette façon, les mots d'un court poème auraient une importance beaucoup plus grande que
         #   les mots d'une très longue oeuvre du même auteur. Ce n'est PAS ce qui vous est demandé ici.
 
-        frequence_Balzac = {}
-        frequence_Hugo = {}
-        frequence_Segur = {}
-        frequence_Verne = {}
-        frequence_Voltaire = {}
-        frequence_Zola = {}
         frequence_dict = dict()
 
         for author in self.auteurs:
