@@ -46,6 +46,7 @@ class markov():
     # PONC = ["!",",","-",".","?",";",":","...","(",")","'"]
     PONC = "!,-.?;:()'_«»"
     sorted_frequence_dict = dict()
+    frequence_dict = dict()
 
     def set_ponc(self, value):
         """Détermine si les signes de ponctuation sont conservés (True) ou éliminés (False)
@@ -157,7 +158,10 @@ class markov():
         Returns:
             resultats (Liste[(string,float)]) : Liste de tuples (auteurs, niveau de proximité), où la proximité est un nombre entre 0 et 1)
         """
-
+        norm = dict()
+        for author in self.auteurs:
+            norm[author] = len(self.frequence_dict[author].keys())
+        print(norm)
         resultats = [("balzac", 0.1234), ("voltaire", 0.1123)]   # Exemple du format des sorties
 
 
@@ -224,10 +228,9 @@ class markov():
         #   De cette façon, les mots d'un court poème auraient une importance beaucoup plus grande que
         #   les mots d'une très longue oeuvre du même auteur. Ce n'est PAS ce qui vous est demandé ici.
 
-        frequence_dict = dict()
 
         for author in self.auteurs:
-            frequence_dict[author] = {}
+            self.frequence_dict[author] = {}
             texts_author = []
             for file in self.get_aut_files(author):
                 texts_author.append(file)
@@ -249,14 +252,14 @@ class markov():
                         if len(word_list) == n_gram_lenght:
                             for words in word_list:
                                 word_string = word_string + words + ' '
-                            if word_string in frequence_dict[author]:
-                                frequence_dict[author][word_string] += 1
+                            if word_string in self.frequence_dict[author]:
+                                self.frequence_dict[author][word_string] += 1
                             else:
-                                frequence_dict[author][word_string] = 1
+                                self.frequence_dict[author][word_string] = 1
                             for words in word_list:
                                 word_list.remove(words)
 
         for authors in self.auteurs:
-            self.sorted_frequence_dict['sorted_' + authors] = sorted(frequence_dict[authors].items(), key=lambda x: x[1], reverse=True)
+            self.sorted_frequence_dict['sorted_' + authors] = sorted(self.frequence_dict[authors].items(), key=lambda x: x[1], reverse=True)
 
         return
