@@ -45,6 +45,7 @@ class markov():
     # Signes de ponctuation à retirer (compléter la liste qui ne comprend que "!" et "," au départ)
     # PONC = ["!",",","-",".","?",";",":","...","(",")","'"]
     PONC = "!,-.?;:()'_«»"
+    sorted_frequence_dict = dict()
 
     def set_ponc(self, value):
         """Détermine si les signes de ponctuation sont conservés (True) ou éliminés (False)
@@ -195,9 +196,8 @@ class markov():
         Returns:
             ngram (List[string]) : Liste des mots composant le n-gramme recherché
         """
-        ngram = self.sorted_frequence_dict['sorted_' + auteur][n]
-        # ngram = ['un', 'roman']   # Exemple du format de sortie d'un bigramme
-        print(ngram)
+        auteur_first_up = auteur[0].upper() + auteur[1:]
+        ngram = self.sorted_frequence_dict['sorted_' + auteur_first_up][n-1]
         return ngram
 
 
@@ -225,7 +225,7 @@ class markov():
         #   les mots d'une très longue oeuvre du même auteur. Ce n'est PAS ce qui vous est demandé ici.
 
         frequence_dict = dict()
-        sorted_frequence_dict = dict()
+
         for author in self.auteurs:
             frequence_dict[author] = {}
             texts_author = []
@@ -257,8 +257,6 @@ class markov():
                                 word_list.remove(words)
 
         for authors in self.auteurs:
-            sorted_frequence_dict['sorted_' + authors] = sorted(frequence_dict[authors].items(), key=lambda x: x[1], reverse=True)
+            self.sorted_frequence_dict['sorted_' + authors] = sorted(frequence_dict[authors].items(), key=lambda x: x[1], reverse=True)
 
-
-        # print(sorted_frequence_dict['sorted_Balzac'])
         return
