@@ -132,9 +132,10 @@ class markov():
         self.rep_aut = os.getcwd()
         self.auteurs = []
         self.ngram = 1
+        self.mot_total = dict()
+        self.word_dict = dict()
         self.sorted_dict = dict()
-        for author in self.auteurs:
-            self.sorted_dict[author] = {}
+        self.dict_prob = dict()
         # Au besoin, ajouter votre code d'initialisation de l'objet de type markov lors de sa création
         return
 
@@ -156,7 +157,40 @@ class markov():
         Returns:
             resultats (Liste[(string,float)]) : Liste de tuples (auteurs, niveau de proximité), où la proximité est un nombre entre 0 et 1)
         """
+        word_inconnu = dict()
+        word_list = list()
+        file = open((oeuvre + '.txt'), encoding="UTF-8")
+        # work each line one by one
+        for line in file:
+            # replace ponctuation by space
+            for replace_char in self.PONC:
+                line = line.replace(replace_char, ' ')
+            # take each word and check if it's longer than 2 letters. + lower the work and put it in a list.
+            for word in line.split():
+                if len(word) > 2:
+                    word_list.append(word.lower())
 
+        word_list.reverse()  # reverse the list because we'll use pop(). and that take the last item in the list.
+        word_to_use = list()  # list of word to use to create a string
+        while len(word_list) > 0:
+            string_to_sort = ""
+            # create string that have n-word. But it can cause error -> ex: odd number
+            n_gram_length = self.ngram
+            if len(word_list) < self.ngram:  # if i dont have enough word to complete the n-gramme,  use the remaining.
+                n_gram_length = len(word_list)
+            while len(word_to_use) < n_gram_length:
+                word_to_use.append(word_list.pop() + " ")
+            # construct a string with the word to use.
+            for word in word_to_use:
+                string_to_sort = string_to_sort + word
+            word_to_use.pop(0)  # pop the first element of the word to use.
+
+            # check if the word is in the dict of the author and add it. Or increase the value.
+            if string_to_sort not in word_inconnu:
+                word_inconnu[string_to_sort] = 1
+            else:
+                word_inconnu[string_to_sort] = word_inconnu[string_to_sort] + 1
+        print(word_inconnu)
         resultats = [("balzac", 0.1234), ("voltaire", 0.1123)]   # Exemple du format des sorties
 
 
@@ -213,10 +247,12 @@ class markov():
             void : ne retourne rien, toute l'information extraite est conservée dans des strutures internes
         """
         # Create dict in a dict
-        word_dict = dict()
         start_time_create_dict = time.time()
         for author in self.auteurs:
-            word_dict[author] = {}
+            self.word_dict[author] = {}
+            self.sorted_dict[author] = {}
+            self.dict_prob[author] = {}
+            self.mot_total[author] = 0
         # Scan for each author
         for author in self.auteurs:
             word_list = list()  # empty list. remake it for each author. Not needed because we pop() the list.
@@ -251,24 +287,30 @@ class markov():
                     string_to_sort = string_to_sort + word
                 word_to_use.pop(0)  # pop the first element of the word to use.
 
-                # 1 = 35676 combinaisons
-                # 2 = 411361 combinaisons
-                # 3 = 673196 combinaisons
                 # check if the word is in the dict of the author and add it. Or increase the value.
-                if string_to_sort not in word_dict[author]:
-                    word_dict[author][string_to_sort] = 1
+                if string_to_sort not in self.word_dict[author]:
+                    self.word_dict[author][string_to_sort] = 1
                 else:
-                    word_dict[author][string_to_sort] = word_dict[author][string_to_sort] + 1
+                    self.word_dict[author][string_to_sort] = self.word_dict[author][string_to_sort] + 1
         final_time_create_dict = time.time() - start_time_create_dict
         # sort the dict
         start_time_sort_dict = time.time()
 
         for author in self.auteurs:
-            self.sorted_dict[author] = sorted(word_dict[author].items(), key=lambda x: -x[1])
+            self.sorted_dict[author] = sorted(self.word_dict[author].items(), key=lambda x: -x[1])
+            value = list(self.word_dict[author].values())
+            for value in value:
+                self.mot_total[author] += value
+            for key in self.word_dict[author]:
+                self.dict_prob[author][key] = self.word_dict[author][key] / self.mot_total[author]
+
+        print(self.dict_prob['Balzac']['une '])
         final_time_sort_dict = time.time() - start_time_sort_dict
-        print(self.sorted_dict[self.auteurs[5]])
+        # print(self.sorted_dict['Balzac'])
+        print(self.mot_total['Balzac'])
         print("Time to create dictionary : " + str(final_time_create_dict))
         print("Time to sort dictionary : " + str(final_time_sort_dict))
+
 
         # print(" Most used unigram by " + self.auteurs[3] + " : swince")
         # print(" Most used bigram by " + self.auteurs[3] + " : swince au")
