@@ -158,18 +158,48 @@ class markov():
         Returns:
             resultats (Liste[(string,float)]) : Liste de tuples (auteurs, niveau de proximité), où la proximité est un nombre entre 0 et 1)
         """
-        norm_author = dict()
-        for author in self.auteurs:
-            norm_author[author] = len(self.frequence_dict[author].keys())
 
-        list_text = oeuvre.split()
-        norm_text = {oeuvre : len(list_text)}
+        dict_text = dict()
+        content = oeuvre.translate(oeuvre.maketrans(self.PONC, "             "))
+        word_list = []
+        for word in content.split():
+            if len(word) > 2:
+                word_list.append(word.lower())
 
-        vector_author = dict()
-        for author_2 in self.auteurs:
-            for freq in self.frequence_dict[author_2]:
-                print(freq)
+            if len(word_list) > 0:
+                n_gram_lenght = self.ngram
+                word_string = ''
+                if len(word_list) == n_gram_lenght:
+                    for words in word_list:
+                        word_string = word_string + words + ' '
+                    if word_string in dict_text:
+                        dict_text[word_string] += 1
+                    else:
+                        dict_text[word_string] = 1
+                    for words in word_list:
+                        word_list.remove(words)
+        print(dict_text)
+        # norm_author = dict()
+        # for author in self.auteurs:
+        #     norm_author[author] = len(self.frequence_dict[author].keys())
+        #
+        # list_text = oeuvre.split()
+        # norm_text = {oeuvre:len(list_text)}
+        #
+        # prox = dict()
+        # for author_2 in self.auteurs:
+        #     for freq in self.frequence_dict[author_2]:
+        #         prox[author_2] = (self.frequence_dict[author][freq]*dict_text[freq])
 
+        # vector_author = dict()
+        # vector_text = dict()
+        # for author_2 in self.auteurs:
+        #     print(author_2)
+        #     vector_author[author_2] = dict()
+        #     for freq in self.frequence_dict[author_2]:
+        #         vector_author[author_2][freq] = self.frequence_dict[author_2][freq]/norm_author[author_2]
+        # for freq_text in oeuvre:
+        #     vector_text[freq]
         resultats = [("balzac", 0.1234), ("voltaire", 0.1123)]   # Exemple du format des sorties
 
 
