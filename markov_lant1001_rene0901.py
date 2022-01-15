@@ -158,10 +158,18 @@ class markov():
         Returns:
             resultats (Liste[(string,float)]) : Liste de tuples (auteurs, niveau de proximité), où la proximité est un nombre entre 0 et 1)
         """
-        norm = dict()
+        norm_author = dict()
         for author in self.auteurs:
-            norm[author] = len(self.frequence_dict[author].keys())
-        print(norm)
+            norm_author[author] = len(self.frequence_dict[author].keys())
+
+        list_text = oeuvre.split()
+        norm_text = {oeuvre : len(list_text)}
+
+        vector_author = dict()
+        for author_2 in self.auteurs:
+            for freq in self.frequence_dict[author_2]:
+                print(freq)
+
         resultats = [("balzac", 0.1234), ("voltaire", 0.1123)]   # Exemple du format des sorties
 
 
