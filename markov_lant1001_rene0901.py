@@ -158,11 +158,13 @@ class markov():
         Returns:
             resultats (Liste[(string,float)]) : Liste de tuples (auteurs, niveau de proximité), où la proximité est un nombre entre 0 et 1)
         """
+        f = open(oeuvre, 'r', encoding="utf-8")
+        content = f.read()
 
         dict_text = dict()
-        content = oeuvre.translate(oeuvre.maketrans(self.PONC, "             "))
+        content_2 = content.translate(content.maketrans(self.PONC, "             "))
         word_list = []
-        for word in content.split():
+        for word in content_2.split():
             if len(word) > 2:
                 word_list.append(word.lower())
 
@@ -178,29 +180,21 @@ class markov():
                         dict_text[word_string] = 1
                     for words in word_list:
                         word_list.remove(words)
-        print(dict_text)
-        # norm_author = dict()
-        # for author in self.auteurs:
-        #     norm_author[author] = len(self.frequence_dict[author].keys())
-        #
-        # list_text = oeuvre.split()
-        # norm_text = {oeuvre:len(list_text)}
-        #
-        # prox = dict()
-        # for author_2 in self.auteurs:
-        #     for freq in self.frequence_dict[author_2]:
-        #         prox[author_2] = (self.frequence_dict[author][freq]*dict_text[freq])
 
-        # vector_author = dict()
-        # vector_text = dict()
-        # for author_2 in self.auteurs:
-        #     print(author_2)
-        #     vector_author[author_2] = dict()
-        #     for freq in self.frequence_dict[author_2]:
-        #         vector_author[author_2][freq] = self.frequence_dict[author_2][freq]/norm_author[author_2]
-        # for freq_text in oeuvre:
-        #     vector_text[freq]
-        resultats = [("balzac", 0.1234), ("voltaire", 0.1123)]   # Exemple du format des sorties
+        norm_author = dict()
+        for author in self.auteurs:
+            norm_author[author] = len(self.frequence_dict[author].keys())
+
+        norm_text = len(dict_text.keys())
+
+        prox = dict()
+        for author_2 in self.auteurs:
+            for freq in self.frequence_dict[author_2]:
+                if freq in dict_text:
+                    prox[author_2] = (self.frequence_dict[author_2][freq]*dict_text[freq])/(norm_author[author_2]*norm_text)
+
+        resultats = prox
+        # resultats = [("balzac", 0.1234), ("voltaire", 0.1123)]   # Exemple du format des sorties
 
 
         # Ajouter votre code pour déterminer la proximité du fichier passé en paramètre avec chacun des auteurs
