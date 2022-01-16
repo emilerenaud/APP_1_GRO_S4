@@ -26,6 +26,9 @@ import os
 import glob
 import ntpath
 import time
+import math
+import numpy as np
+
 
 class markov():
     """Classe à utiliser pour coder la solution à la problématique:
@@ -43,7 +46,7 @@ class markov():
 
     # Le code qui suit est fourni pour vous faciliter la vie.  Il n'a pas à être modifié
     # Signes de ponctuation à retirer (compléter la liste qui ne comprend que "!" et "," au départ)
-    PONC = ["!",",","'",".", ":","-","?",";","_","«","»","(",")"]
+    PONC = ["!", ",", "'", ".", ":", "-", "?", ";", "_", "«", "»", "(", ")"]
 
     def set_ponc(self, value):
         """Détermine si les signes de ponctuation sont conservés (True) ou éliminés (False)
@@ -104,7 +107,6 @@ class markov():
         self.rep_aut = os.path.normpath(self.rep_aut)
         self.set_auteurs()
         return
-
 
     def set_ngram(self, ngram):
         """Indique que l'analyse et la génération de texte se fera avec des n-grammes de taille ngram
@@ -190,9 +192,31 @@ class markov():
                 word_inconnu[string_to_sort] = 1
             else:
                 word_inconnu[string_to_sort] = word_inconnu[string_to_sort] + 1
-        print(word_inconnu)
-        resultats = [("balzac", 0.1234), ("voltaire", 0.1123)]   # Exemple du format des sorties
+        mot_total = 0
+        dict_prob_inconnu = dict()
+        value = list(word_inconnu.values())
+        for value in value:
+            mot_total += pow(value, 2)
+        mot_total = math.sqrt(mot_total)
+        # print(mot_total)
+        for key in word_inconnu:
+            dict_prob_inconnu[key] = word_inconnu[key] / mot_total
 
+        # print(dict_prob_inconnu)
+        indice_auteur = dict()
+        for author in self.auteurs:
+            indice_auteur[author] = 0
+            for word in dict_prob_inconnu.keys():
+                if word in self.word_dict[author]:
+                    # indice_auteur[author] += math.sqrt(pow(self.dict_prob[author][word] * dict_prob_inconnu[word],2))
+                    indice_auteur[author] += self.dict_prob[author][word] * dict_prob_inconnu[word]
+        # print(indice_auteur)
+        # 1.23316
+
+        resultats = [("Balzac", indice_auteur['Balzac']), ("Hugo", indice_auteur['Hugo']),
+                     ("Ségur", indice_auteur['Ségur']), ("Verne", indice_auteur['Verne']),
+                     ("Voltaire", indice_auteur['Voltaire']),
+                     ("Zola", indice_auteur['Zola'])]  # Exemple du format des sorties
 
         # Ajouter votre code pour déterminer la proximité du fichier passé en paramètre avec chacun des auteurs
         # Retourner la liste des auteurs, chacun avec sa proximité au fichier inconnu
@@ -216,7 +240,21 @@ class markov():
         Returns:
             void : ne retourne rien, le texte produit doit être écrit dans le fichier "textname"
         """
+        word_list = list(self.word_dict[auteur].keys())
+        first_string = np.random.choice(word_list)
+        chain = list()
+        chain.append(first_string)
+        for i in range(taille):
+            word_list_2 = list()
+            for word in word_list:
+                word_to_search = chain[-1].split()[-1]
+                if word.find(word_to_search) == 0:
+                    word_list_2.append(word)
+            chain.append(np.random.choice(word_list_2).split()[-1])
 
+        file = open((textname + '.txt'), 'w')
+        file.write(' '.join(chain))
+        file.close()
         return
 
     def get_nth_element(self, auteur, n):
@@ -232,10 +270,10 @@ class markov():
         keys = list()
         keys = self.sorted_dict[auteur]
         # print(keys)
-        ngram = ['un', 'roman']   # Exemple du format de sortie d'un bigramme
-        ngram = keys[n-1]
+        # print(keys[n-1][0])
+        ngram = ['un', 'roman']  # Exemple du format de sortie d'un bigramme
+        ngram = keys[n - 1][0].split()
         return ngram
-
 
     def analyze(self):
         """Fait l'analyse des textes fournis, en traitant chaque oeuvre de chaque auteur
@@ -259,7 +297,7 @@ class markov():
             # Scan each filename for an author
             for filename in self.get_aut_files(author):
                 # Open a file
-                file = open(filename,encoding="UTF-8")
+                file = open(filename, encoding="UTF-8")
                 # work each line one by one
                 for line in file:
                     # replace ponctuation by space
@@ -272,13 +310,13 @@ class markov():
 
             # Create n-gramme string
             # print("lengh list = " + str(len(word_list)))
-            word_list.reverse()     # reverse the list because we'll use pop(). and that take the last item in the list.
-            word_to_use = list()    # list of word to use to create a string
+            word_list.reverse()  # reverse the list because we'll use pop(). and that take the last item in the list.
+            word_to_use = list()  # list of word to use to create a string
             while len(word_list) > 0:
                 string_to_sort = ""
                 # create string that have n-word. But it can cause error -> ex: odd number
                 n_gram_length = self.ngram
-                if len(word_list) < self.ngram:     # if i dont have enough word to complete the n-gramme,  use the remaining.
+                if len(word_list) < self.ngram:  # if i dont have enough word to complete the n-gramme,  use the remaining.
                     n_gram_length = len(word_list)
                 while len(word_to_use) < n_gram_length:
                     word_to_use.append(word_list.pop() + " ")
@@ -300,17 +338,17 @@ class markov():
             self.sorted_dict[author] = sorted(self.word_dict[author].items(), key=lambda x: -x[1])
             value = list(self.word_dict[author].values())
             for value in value:
-                self.mot_total[author] += value
+                self.mot_total[author] += pow(value, 2)
+            self.mot_total[author] = math.sqrt(self.mot_total[author])
             for key in self.word_dict[author]:
                 self.dict_prob[author][key] = self.word_dict[author][key] / self.mot_total[author]
 
-        print(self.dict_prob['Balzac']['une '])
+        # print(self.dict_prob['Balzac']['une '])
         final_time_sort_dict = time.time() - start_time_sort_dict
         # print(self.sorted_dict['Balzac'])
-        print(self.mot_total['Balzac'])
-        print("Time to create dictionary : " + str(final_time_create_dict))
-        print("Time to sort dictionary : " + str(final_time_sort_dict))
-
+        # print(self.mot_total['Balzac'])
+        # print("Time to create dictionary : " + str(final_time_create_dict))
+        # print("Time to sort dictionary : " + str(final_time_sort_dict))
 
         # print(" Most used unigram by " + self.auteurs[3] + " : swince")
         # print(" Most used bigram by " + self.auteurs[3] + " : swince au")
