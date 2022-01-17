@@ -25,7 +25,7 @@
 import os
 import glob
 import ntpath
-import string
+import numpy as np
 
 class markov():
     """Classe à utiliser pour coder la solution à la problématique:
@@ -47,6 +47,7 @@ class markov():
     PONC = "!,-.?;:()'_«»"
     sorted_frequence_dict = dict()
     frequence_dict = dict()
+    word_author = dict()
 
     def set_ponc(self, value):
         """Détermine si les signes de ponctuation sont conservés (True) ou éliminés (False)
@@ -183,15 +184,20 @@ class markov():
 
         norm_author = dict()
         for author in self.auteurs:
-            norm_author[author] = len(self.frequence_dict[author].keys())
+            norm_author[author] = 0
+            for key in self.frequence_dict[author]:
+                norm_author[author] += self.frequence_dict[author][key]
 
-        norm_text = len(dict_text.keys())
+        norm_text = 0
+        for key in dict_text:
+            norm_text += dict_text[key]
 
         prox = dict()
-        for author_2 in self.auteurs:
-            for freq in self.frequence_dict[author_2]:
-                if freq in dict_text:
-                    prox[author_2] = (self.frequence_dict[author_2][freq]*dict_text[freq])/(norm_author[author_2]*norm_text)
+        for author in self.auteurs:
+            prox[author] = 0
+            for key in dict_text:
+                if key in self.frequence_dict[author]:
+                    prox[author] += (self.frequence_dict[author][key]*dict_text[key])/(norm_author[author]*norm_text)
 
         resultats = prox
         # resultats = [("balzac", 0.1234), ("voltaire", 0.1123)]   # Exemple du format des sorties
@@ -219,6 +225,15 @@ class markov():
         Returns:
             void : ne retourne rien, le texte produit doit être écrit dans le fichier "textname"
         """
+
+        # word_list = list(self.word_author[auteur])
+        # random_text = list()
+        # for i in range(taille):
+        #     random_text.append(' ' + np.random.choice(word_list))
+        #
+        # file = open(textname + '.txt', 'w')
+        # file.write(' '.join(random_text))
+        # file.close()
 
         return
 
@@ -274,9 +289,11 @@ class markov():
                 content_2 = content.translate(content.maketrans(self.PONC, "             "))
 
                 word_list = []
+                self.word_author[author] = list()
                 for word in content_2.split():
                     if len(word) > 2:
                         word_list.append(word.lower())
+                        self.word_author[author].append(word.lower())
 
                     if len(word_list) > 0:
                         n_gram_lenght = self.ngram
